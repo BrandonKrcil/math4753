@@ -6,7 +6,7 @@
 #'
 #' @param x a vector
 #'
-#' @return a list of vectors
+#' @return a vector of squared components in the form of a vector object 1
 #' @export
 #'
 #' @examples
