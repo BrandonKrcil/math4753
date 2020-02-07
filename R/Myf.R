@@ -1,18 +1,14 @@
-#' My function of squares and cubes
+#' Square Function
 #'
-#' produce list of squares and cubes
+#' Takes a vector an returns a vector of squared components
 #'
-#' This is a part of the introduction to package making
+#' @param x
 #'
-#' @param x a vector
-#'
-#' @return a vector of squared components in the form of a vector object 1
+#' @return a vector of squared components
 #' @export
 #'
 #' @examples
-#' x=1:4;myf(x)
-myf = function(x){
-  obj1=x^2 # square a vector blah
-  obj2=x^3
-  list(square=obj1,cube=obj2)
+#' x=1:30; myf(x)
+myf=function(x){
+  x^2
 }
