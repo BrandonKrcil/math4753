@@ -2,7 +2,7 @@
 % Please edit documentation in R/Myf.R
 \name{myf}
 \alias{myf}
-\title{My function of sqaures and cubes}
+\title{My function of squares and cubes}
 \usage{
 myf(x)
 }
@@ -10,7 +10,7 @@ myf(x)
 \item{x}{a vector}
 }
 \value{
-a list of vectors
+a vector of squared components in the form of a vector object 1
 }
 \description{
 produce list of squares and cubes
