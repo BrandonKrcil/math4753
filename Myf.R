@@ -9,6 +9,6 @@
 #'
 #' @examples
 #' x=1:30; myf(x)
-myf=function(x){
+squarefun=function(x){
   x^2
 }
