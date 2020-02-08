@@ -8,7 +8,7 @@
 #' @export
 #'
 #' @examples
-#' x=1:30; mysquarefun(x)
+#' x=1:30; myf(x)
 squarefun=function(x){
   x^2
 }

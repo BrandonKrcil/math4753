@@ -1,0 +1,270 @@
+---
+title: "Lab 4"
+author: "Brandon Krcil"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: yes
+    toc_float: yes
+    theme: spacelab
+    highlight: pygments
+---
+# Task 1
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+getwd()
+```
+# Task 2
+
+```{r}
+spruce.df = read.csv("SPRUCE.csv")
+ myread=function(csv){
+  fl=paste(dird,csv,sep="")
+  read.table(fl,header=TRUE,sep=",")
+ }
+ tail(spruce.df)
+```
+
+# Task 3
+```{r}
+library(s20x)
+
+trendscatter(Height~BHDiameter,f=0.5,data=spruce.df)
+```
+
+```{r}
+spruce.lm=with(spruce.df,lm(Height~BHDiameter))
+height.res=residuals(spruce.lm)
+height.fit=fitted(spruce.lm)
+plot(height.fit,height.res)
+```
+
+```{r}
+library(s20x)
+trendscatter(height.res~height.fit)
+```
+
+>	What shape is seen in the plot? Compare it with the curve made with the trendscatter function.
+> Answer: This curve is a lot more bell shaped than the first one that was plotted, and trends down instead of continually going upwards and represents the data better than the linear function from Lab 3.
+
+```{r}
+plot(spruce.lm, which =1)
+```
+
+```{r}
+normcheck(spruce.lm,shapiro.wilk = TRUE)
+```
+> What is the pvalue for the Shapiro-Wilk test? What is the NULL hypothesis in this case?
+
+> Answer: The P-value is 0.29. The NULL hypothesis is that it's normally distributed, and it talks about the data set fitting the straight line. This gives evidence to reject the null hypothesis because the data doesn't fit well. 
+
+> Write a sentence outlining your conclusions concerning the validity of applying the straight line to this data set.
+
+> The straight line fits the second data set much better. Hence, making it more valid than the first one. 
+
+# Task 4
+
+```{r}
+quad.lm=lm(Height~BHDiameter + I(BHDiameter^2),data=spruce.df)
+summary(quad.lm)
+add1(spruce.lm,.~.+I(BHDiameter^2))
+anova(spruce.lm)
+anova(quad.lm)
+anova(spruce.lm,quad.lm)
+cubic.lm=lm(Height~BHDiameter + I(BHDiameter^2)+I(BHDiameter^3),data=spruce.df)
+anova(cubic.lm)
+add1(quad.lm,.~.+I(BHDiameter^3))
+
+plot(Height~BHDiameter,bg="Blue",pch=21,cex=1.2, 
+     ylim=c(0,1.1*max(Height)), xlim=c(0,1.1*max(BHDiameter)),
+     main="Spruce Height Prediction", data=spruce.df)
+```
+
+```{r}
+plot(Height~BHDiameter,bg="Blue",pch=21,cex=1.2,
+ylim=c(0,max(Height)),xlim=c(0,max(BHDiameter)), 
+main="Spruce height prediction",data=spruce.df)
+
+coef(quad.lm)
+names(quad.lm)
+quad.lm$coef[2]
+
+myplot=function(x){
+ 0.86089580 +1.46959217*x  -0.02745726*x^2
+ }
+ 
+curve(myplot, lwd=2, col="steelblue",add=TRUE)
+```
+
+```{r}
+quad.res=residuals(quad.lm)
+quad.fit=fitted(quad.lm)
+plot(quad.fit,quad.res)
+```
+
+```{r}
+plot(quad.lm, which=1)
+```
+
+```{r}
+normcheck(quad.lm,shapiro.wilk = TRUE)
+```
+> What is the value of the p-value in the Shapiro-Wilk test? What do you conclude?
+
+> The p-value is 0.684. It can be concluded that a quadratic function is a good estimate of the data due to the null hypothesis.
+
+# Task 5
+
+```{r}
+summary(quad.lm)
+```
+
+> What is the value of $\hat{\beta_0}$?
+
+> Answer: The value of $\hat{\beta_0}$ is 0.860896.
+
+> Question: What is the value of$\hat{\beta_1}$?
+
+> Answer: 1.469592
+
+> Question: What is the value of$\hat{\beta_2}$?
+
+> Answer: -0.027457
+
+> Interval estimates for $\beta_0$,$\beta_1$,$\beta_2$.
+
+> Answer: 3.065918 to -1.344126, 1.713378 to 0.98202, -0.020822 to -0.034092
+
+> Question: Write an equation of the fitted line.
+
+> Answer: $y= -0.027x^2 + 1.469x + 0.861$
+
+```{r}
+predict(quad.lm, data.frame(BHDiameter=c(15,18,20)))
+```
+
+> Question: What is the value of multiple R^2? Compare it with the previous model. 
+
+> Answer: 0.7741. The r^2 of the new data is higher and therefore more accurate.
+
+> Question: Make use of adjusted R squared to compare models to determine which is "better". 
+
+> Answer: The second one is better because it is higher at 0.7604, and it takes into account more predictors than the regular r squared. 
+
+> Question: What does  ( multiple R^2) mean in this case? 
+
+> Answer: the quadratic one takes another variable into account to see which is better. So the quadratic is more accurate.
+
+> Question: What does  ( multiple R^2) mean in this case? 
+
+> Answer: the quadratic one takes another variable into account to see which is better. So the quadratic is more accurate.
+
+> Question: Which model explains the most variability in the Height? 
+
+> Answer: The quadratic explains the most variance in height, due to the numbers shown in the analysis of the table and the higher r values. 
+
+```{r}
+anova(quad.lm)
+anova(spruce.lm)
+```
+
+> Use anova() and compare the two models. Paste anova output here and give your conclusion underneath.
+	Find TSS, record it here
+	Find MSS, record it here
+	Find RSS, record it here
+	What is the value of MSS/TSS?
+	
+```{r}
+height.qfit=fitted(quad.lm)
+RSS=with(spruce.df, sum((Height-height.qfit)^2))
+RSS
+MSS = with(spruce.df, sum((height.qfit-mean(Height))^2))
+MSS
+
+TSS = with(spruce.df, sum((Height-mean(Height))^2))
+TSS
+
+
+MSS/TSS
+```
+	
+# Task 6
+```{r}
+cooks20x(quad.lm)
+```
+
+> Cook's distance is used in analysis. It is an estimate of the influence of a data point when performing regression analysis. Points with a large cooks distance/residuals should be looked at.
+
+> Question:	What does cooks distance for the quadratic model and data tell you?
+
+> Answer: 18, 21, and 24 points should be examined because they are large enough to be outliers. 
+
+```{r}
+quad2.lm=lm(Height~BHDiameter + I(BHDiameter^2) , data=spruce.df[-24,])
+summary(quad2.lm)
+summary(quad.lm)
+```
+
+> Question: What do you conclude? 
+
+> Answer: the main difference is that they now have different intercepts. The r squared value is also much larger for the data without 24. This shows that it is therefore more accurate.
+
+# Task 7
+# Proof That ${y}={\beta_0}+{\beta_1}+{\beta_2}({x}-{x_k}){I}$ where ${I}$:=1 when ${x}>{x_k}$ and 0 everywhere else:
+We have two lines ${\gamma_1}$ and ${\gamma_2}$ with point ${x_k}$ in common.
+
+$${\gamma_1}:  {y} = {\beta_0} + {\beta_1}{x}$$
+
+$${\gamma_2}:  {y} = {\beta_0} +  {\delta} + ({\beta_1} + {\beta_2}) {x}$$
+
+Now plug in ${x_k}$ and set ${\gamma_1}$ and ${\gamma_2}$ equal to each other ${\because}$ they share this point.
+
+This implies that 
+$${y_k} = {\beta_0} + {\beta_1} {x_k} = {\beta_0} +{\delta} + ({\beta_1} + {\beta_2}) {x_k}$$
+
+Which simplifies to 
+$$ {\beta_0} + {\beta_1}{x_k} - ({\beta_0} + {\delta} +{\beta_1}{x_k} + {\beta_2}{x_k})$$
+
+Also notice that the ${\beta_0}$'s and the ${\beta_1}{x_k}$'s cancel. 
+
+This implies that
+
+$${0}= -{\delta}- {\beta_2}{x_k}$$
+
+$${\therefore}  
+{\delta} = -{\beta_2}{x_k}$$
+
+Now plug ${\delta} = -{\beta_2}{x_k}$ into ${\gamma_2}$ to get $${\gamma_2}: {y} = {\beta_0} - {\beta_2}{x_k} +{\beta_1}{x} + {\beta_2} {x}$$
+
+Now factor out ${\beta_2}$:
+$${\gamma_2}: {y} = {\beta_0}  +{\beta_1}{x} + {\beta_2}({x}-{x_k})$$
+
+We now have a formula describing ${\gamma_2}$ as an adjustment of ${\gamma_1}$. So we can use an indicator function ${I}$ so our function knows when to and to not include the adjustment. 
+Hence, we have $${y} = {\beta_0}  +{\beta_1}{x} + {\beta_2}({x}-{x_k}){I}$$ Here, ${I}$=1 if ${x}>{x_k}$ and equals 0 everywhere else. ${\blacksquare}$
+
+```{r}
+sp2.df=within(spruce.df, X<-(BHDiameter-20)*(BHDiameter>20)) # this makes a new variable and places it within the same df
+sp2.df
+
+lmp=lm(Height~BHDiameter + X,data=sp2.df)
+tmp=summary(lmp)
+names(tmp)
+myf = function(x,coef){
+  coef[1]+coef[2]*(x) + coef[3]*(x-18)*(x-18>0)
+}
+plot(spruce.df,main="Piecewise regression")
+myf(0, coef=tmp$coefficients[,"Estimate"])
+curve(myf(x,coef=tmp$coefficients[,"Estimate"] ),add=TRUE, lwd=2,col="Blue")
+abline(v=18)
+text(18,16,paste("R sq.=",round(tmp$r.squared,4) ))
+```
+
+# Task 8
+```{r}
+library
+```
+
+
